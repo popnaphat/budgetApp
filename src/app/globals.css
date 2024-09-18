@@ -28,7 +28,9 @@ input {
     )
     rgb(var(--background-start-rgb));
 } */
-
+body {
+  @apply bg-gray-100; 
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;

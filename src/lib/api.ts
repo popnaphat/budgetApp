@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const apiBaseURL = process.env.NEXT_PUBLIC_API_URL;
+
 export const api = axios.create({
-  baseURL: "https://task-api-v2.onrender.com",
+  baseURL: apiBaseURL,
 });
+

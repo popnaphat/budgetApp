@@ -1,51 +1,82 @@
 import { formatDecimal } from "@/lib/format-decimal";
 import { BudgetRequest } from "@/models/budget-request";
 import { Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface BudgetRequestDataTableProps {
   items: BudgetRequest[];
 }
 
 function BudgetRequestDataTable({ items }: BudgetRequestDataTableProps) {
-
+  const router = useRouter();
+  const handleClick = (id: number) => {
+    router.push(`/edit/${id}`);
+  };
   return (
-    <table className="min-w-full bg-white">
-      <thead>
-        <tr className="">
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Id
-          </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Title
-          </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Budget
-          </th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200">
-        {items.map((request) => (
-          <tr key={request.id}>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <button className="text-gray-600 hover:text-blue-600">
-                <Pencil className="h-4 w-4" />
-              </button>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-right">
-              {request.id}
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap">
-              <span className="font-bold">{request.title}</span> x{" "}
-              {request.quantity} Units
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-right">
-              {formatDecimal(request.price)}
-            </td>
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead className="bg-gradient-to-r from-gray-100 to-gray-200">
+          <tr>
+            <th className="px-4 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Edit
+            </th>
+            <th className="px-4 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Id
+            </th>
+            <th className="px-10 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Title
+            </th>
+            <th className="px-10 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Budget
+            </th>
+            <th className="px-10 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Status
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {items.map((request, index) => (
+            <tr
+              key={request.id}
+              className={`${
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } hover:bg-gray-100 transition-colors`}
+            >
+              <td className="px-4 py-4 whitespace-nowrap">
+                <button
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  onClick={() => handleClick(request.id)} // Replace `item.id` with the actual id you are using
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+              </td>
+              <td className="px-4 py-4 whitespace-nowrap text-right font-medium text-gray-700">
+                {request.id}
+              </td>
+              <td className="px-10 py-4 whitespace-nowrap font-semibold text-gray-800">
+                {request.title} - {request.quantity} units
+              </td>
+              <td className="px-10 py-4 whitespace-nowrap text-right font-medium text-indigo-600">
+                {formatDecimal(request.amount)}
+              </td>
+              <td className="px-10 py-4 whitespace-nowrap text-right">
+                <span
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    request.status === "APPROVED"
+                      ? "bg-green-100 text-green-800"
+                      : request.status === "REJECTED"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {request.status}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

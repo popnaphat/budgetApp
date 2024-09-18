@@ -1,90 +1,49 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BudgetPanel from "@/components/BudgetPanel";
 import BudgetRequestDataTable from "../components/BudgetRequestDataTable";
 import { BudgetRequest } from "@/models/budget-request";
-import { createBudgetItem, fetchBudgetItems } from "@/services/budget-item";
-
-let nextId = 3;
+import {fetchBudgetItems } from "@/services/budget-item";
+import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from 'next/navigation'; 
 function Home() {
   const [budgetRequests, setBudgetRequests] = useState<BudgetRequest[]>([]);
-
+  const { clearExpired } = useAuth();
+  const router = useRouter();
   useEffect(() => {
-    fetchBudgetItems().then((items) => setBudgetRequests(items));
-  }, []);
+    let isMounted = true; // ใช้ flag เพื่อป้องกันการ set state บน component ที่ถูก unmount ไปแล้ว
+  
+    const fetchData = async () => {
+      try {
+        const items = await fetchBudgetItems(); // รอข้อมูลจาก fetchBudgetItems
+        if (isMounted) { // ตรวจสอบว่า component ยังคง mounted
+          setBudgetRequests(items);
+        }
+      } catch (err) {
+        if (isMounted) { // ตรวจสอบว่า component ยังคง mounted
+          await clearExpired();
+          router.push("/login"); // นำทางเมื่อเกิด error และ component ยังคง mounted
+        }
+      }
+    };
+  
+    fetchData(); // เรียกใช้ฟังก์ชัน
+  
+    return () => {
+      isMounted = false; // cleanup เมื่อ component unmounts
+    };
+  }, []); // ใส่ clearExpired และ router ใน dependency array
 
-  const addRequest = async (newRequest: BudgetRequest) => {
-    try {
-      const insertedRequest = await createBudgetItem({
-        title: newRequest.title,
-        quantity: newRequest.quantity,
-        price: newRequest.price,
-      });
-      setBudgetRequests([...budgetRequests, insertedRequest]);
-    } catch (err: any) {
-      const messsages = err.response.data.message;
 
-      alert(`Fail to create - reason ${JSON.stringify(messsages)}`);
-    }
-  };
-
-  const [newRequest, setNewRequest] = useState<BudgetRequest>({
-    id: 0,
-    title: "",
-    price: 0,
-    quantity: 1,
-    status: "APPROVED",
-  });
-
-  const updateField = (event: ChangeEvent<HTMLInputElement>) => {
-    const value =
-      event.target.type === "number"
-        ? Number(event.target.value)
-        : event.target.value;
-    setNewRequest({
-      ...newRequest,
-      [event.target.name]: value,
-    });
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    addRequest({
-      id: nextId++,
-      title: newRequest.title,
-      price: newRequest.price,
-      quantity: 1,
-      status: "APPROVED",
-    });
-  };
 
   return (
     <div>
       <main className="container mx-auto">
         <div className="mt-4">
-          <BudgetPanel items={budgetRequests} />
+          {/* <BudgetPanel items={budgetRequests} /> */}
         </div>
-        <form onSubmit={handleSubmit}>
-          <div>
-            Title:
-            <input
-              name="title"
-              value={newRequest.title}
-              onChange={updateField}
-            />
-          </div>
-          <div>
-            Amount:
-            <input
-              name="price"
-              type="number"
-              value={newRequest.price}
-              onChange={updateField}
-            />
-          </div>
-          <button>Add</button>
-        </form>
+        
         <div className="mt-4">
           <BudgetRequestDataTable items={budgetRequests} />
         </div>

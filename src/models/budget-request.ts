@@ -1,7 +1,7 @@
 export interface BudgetRequest {
   id: number;
   title: string;
-  price: number;
+  amount: number;
   quantity: number;
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
