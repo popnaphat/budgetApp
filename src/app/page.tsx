@@ -41,7 +41,7 @@ function Home() {
     <div>
       <main className="container mx-auto">
         <div className="mt-4">
-          {/* <BudgetPanel items={budgetRequests} /> */}
+          <BudgetPanel items={budgetRequests} />
         </div>
         
         <div className="mt-4">

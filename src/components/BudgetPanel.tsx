@@ -20,7 +20,9 @@ interface BudgetPanelProps {
 }
 
 function BudgetPanel({ items }: BudgetPanelProps) {
-  const total = 10_000;
+  const total = items
+    .map((request) => request.amount)
+    .reduce((sum, amount) => sum + amount, 0);
   const usedBudget = items
     .filter((request) => request.status === "APPROVED")
     .map((request) => request.amount)
