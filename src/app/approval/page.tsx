@@ -4,70 +4,88 @@ import { useAuth } from "@/app/context/AuthContext";
 import { formatDecimal } from "@/lib/format-decimal";
 import { BudgetRequest } from "@/models/budget-request";
 import { useRouter } from "next/navigation";
-import { fetchBudgetItems, updateBudgetItemStatus } from "@/services/budget-item";
+import {
+  fetchBudgetItems,
+  updateBudgetItemStatus,
+} from "@/services/budget-item";
 
 interface BudgetRequestDataTableProps {
   items: BudgetRequest[];
   handleClick: (id: number, state: "APPROVED" | "REJECTED") => void;
 }
 
-function BudgetRequestPending({ items, handleClick }: BudgetRequestDataTableProps) {
+function BudgetRequestPending({
+  items,
+  handleClick,
+}: BudgetRequestDataTableProps) {
   return (
-    <div className="overflow-x-auto">
+    <div className="mt-4 mx-4 overflow-x-auto">
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gradient-to-r from-gray-100 to-gray-200">
+        <thead className="bg-gray-300">
           <tr>
-            <th className="px-4 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"></th>
-            <th className="px-4 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Id</th>
-            <th className="px-10 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-            <th className="px-10 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Budget</th>
-            <th className="px-10 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
+            <th className="px-4 py-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider sm:w-1/4 md:w-1/6 lg:w-1/12">Approval</th>
+            <th className="px-4 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider sm:w-1/4 md:w-1/6 lg:w-1/12">
+              Id
+            </th>
+            <th className="px-4 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider sm:w-1/2 md:w-1/3 lg:w-1/4">
+              Title
+            </th>
+            <th className="px-4 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider sm:w-1/2 md:w-1/3 lg:w-1/4">
+              Budget
+            </th>
+            <th className="px-4 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider sm:w-1/2 md:w-1/3 lg:w-1/4">
+              Status
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {items.filter(request => request.status === "PENDING").map((request, index) => (
-            <tr
-              key={request.id}
-              className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition-colors`}
+          {items
+            .filter((request) => request.status === "PENDING")
+            .map((request, index) => (
+              <tr
+                key={request.id}
+                className={`${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } hover:bg-gray-100 transition-colors`}
+              >
+                <td className="px-4 py-2 whitespace-nowrap">
+            <button
+              className="bg-green-500 text-white hover:bg-green-600 transition-colors px-3 py-1 rounded mr-2 text-xs"
+              onClick={() => handleClick(request.id, "APPROVED")}
             >
-              <td className="px-4 py-4 whitespace-nowrap">
-                <button
-                  className="bg-green-500 text-white hover:bg-green-600 transition-colors px-4 py-2 rounded mr-2"
-                  onClick={() => handleClick(request.id, "APPROVED")}
-                >
-                  Approve
-                </button>
-                <button
-                  className="bg-red-500 text-white hover:bg-red-600 transition-colors px-4 py-2 rounded"
-                  onClick={() => handleClick(request.id, "REJECTED")}
-                >
-                  Reject
-                </button>
-              </td>
-              <td className="px-4 py-4 whitespace-nowrap text-right font-medium text-gray-700">
-                {request.id}
-              </td>
-              <td className="px-10 py-4 whitespace-nowrap font-semibold text-gray-800">
-                {request.title} - {request.quantity} units
-              </td>
-              <td className="px-10 py-4 whitespace-nowrap text-right font-medium text-indigo-600">
-                {formatDecimal(request.amount)}
-              </td>
-              <td className="px-10 py-4 whitespace-nowrap text-right">
-                <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    request.status === "APPROVED"
-                      ? "bg-green-100 text-green-800"
-                      : request.status === "REJECTED"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {request.status}
-                </span>
-              </td>
-            </tr>
-          ))}
+              Approve
+            </button>
+            <button
+              className="bg-red-500 text-white hover:bg-red-600 transition-colors px-3 py-1 rounded text-xs"
+              onClick={() => handleClick(request.id, "REJECTED")}
+            >
+              Reject
+            </button>
+          </td>
+          <td className="px-4 py-2 whitespace-nowrap text-right font-medium text-gray-700 text-xs sm:text-sm">
+            {request.id}
+          </td>
+          <td className="px-4 py-2 whitespace-nowrap font-semibold text-gray-800 text-xs sm:text-sm">
+            {request.title} - {request.quantity} units
+          </td>
+          <td className="px-4 py-2 whitespace-nowrap text-right font-medium text-indigo-600 text-xs sm:text-sm">
+            {formatDecimal(request.amount)}
+          </td>
+          <td className="px-4 py-2 whitespace-nowrap text-right text-xs sm:text-sm">
+            <span
+              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                request.status === "APPROVED"
+                  ? "bg-green-100 text-green-800"
+                  : request.status === "REJECTED"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }`}
+            >
+              {request.status}
+            </span>
+          </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
@@ -106,7 +124,7 @@ function Approval() {
 
   const handleClick = async (id: number, state: "APPROVED" | "REJECTED") => {
     try {
-      await updateBudgetItemStatus({ id }, state); 
+      await updateBudgetItemStatus({ id }, state);
       // หลังจากการอัปเดตสำเร็จ รีเฟรชข้อมูล
       const items = await fetchBudgetItems();
       setBudgetRequests(items);

@@ -40,11 +40,11 @@ function Home() {
   return (
     <div>
       <main className="container mx-auto">
-        <div className="mt-4">
+        <div className="mt-4 mx-4">
           <BudgetPanel items={budgetRequests} />
         </div>
         
-        <div className="mt-4">
+        <div className="mt-4 mx-4">
           <BudgetRequestDataTable items={budgetRequests} />
         </div>
       </main>
