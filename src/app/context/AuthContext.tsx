@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           text: response.message,
           icon: 'success',
           confirmButtonText: 'OK',
-          confirmButtonColor: '#3085d6',
+          confirmButtonColor: '#4caf50',
         }).then(() => {
             localStorage.removeItem('username');
             setUsername(null);
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           text: err.message,
           icon: 'error',
           confirmButtonText: 'Try Again',
-          confirmButtonColor: '#d33',
+          confirmButtonColor: '#f44336',
         });
       }
   };
